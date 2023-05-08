@@ -1,4 +1,5 @@
 /bin/
 /node_modules/
 Pulumi.*.yaml
+!Pulumi.example.yaml
 kubeconfig
