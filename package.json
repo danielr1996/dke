@@ -6,6 +6,7 @@
     },
     "dependencies": {
         "@pulumi/hcloud": "^1.11.1",
+        "@pulumi/keycloak": "^5.1.0",
         "@pulumi/kubernetes": "^3.0.0",
         "@pulumi/kubernetesx": "^0.1.5",
         "@pulumi/pulumi": "^3.0.0",
