@@ -1,0 +1,16 @@
+{
+    "name": "dke",
+    "main": "index.ts",
+    "devDependencies": {
+        "@types/node": "^16"
+    },
+    "dependencies": {
+        "@muhlba91/pulumi-proxmoxve": "^4.0.1",
+        "@pulumi/hcloud": "^1.11.1",
+        "@pulumi/kubernetes": "^3.0.0",
+        "@pulumi/kubernetesx": "^0.1.5",
+        "@pulumi/pulumi": "^3.0.0",
+        "@ydkn/pulumi-k0s": "^0.1.11",
+        "proxmox-api": "^1.0.0"
+    }
+}
