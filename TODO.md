@@ -1,0 +1,3 @@
+- implement controlplane HA with loadbalancer or floating ip
+- add host keys to prevent error messages because host keys have changed
+- dont add ssh key from execution host to servers, instead create a new key
