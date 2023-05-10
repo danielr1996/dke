@@ -82,4 +82,57 @@ const grafana = new k8s.apiextensions.CustomResource('grafana', {
             }
         }
     }
-}, { provider })
+}, { dependsOn: grafanaOperator,provider })
+
+const grafanaDatasource = new k8s.apiextensions.CustomResource('grafana-datasource', {
+    apiVersion: 'grafana.integreatly.org/v1beta1',
+    kind: 'GrafanaDatasource',
+    metadata: {
+        name: 'prometheus',
+        namespace: 'observability-system',
+    },
+    spec: {
+        instanceSelector: {
+            matchLabels: {
+                dashboards: "grafana"
+            }
+        },
+        datasource: {
+            name: 'prometheus',
+            type: 'prometheus',
+            access: 'proxy',
+            basicAuth: false,
+            url: 'http://kube-prometheus-prometheus:9090',
+            isDefault: true,
+            jsonData: {
+                tlsSkipVerify: true,
+                timeInterval: '5s'
+            },
+            editable: true,
+        }
+    }
+}, { dependsOn: grafanaOperator, provider })
+
+const dashboards = [
+    'k8s-system-api-server.json',
+    'k8s-system-coredns.json',
+    'k8s-views-global.json',
+    'k8s-views-namespaces.json',
+    'k8s-views-nodes.json',
+    'k8s-views-pods.json',
+].map(name=>new k8s.apiextensions.CustomResource(name, {
+    apiVersion: 'grafana.integreatly.org/v1beta1',
+    kind: 'GrafanaDashboard',
+    metadata: {
+        name,
+        namespace: 'observability-system',
+    },
+    spec: {
+        instanceSelector: {
+            matchLabels: {
+                dashboards: "grafana"
+            }
+        },
+        url: `https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/${name}`
+    }
+}, { dependsOn: grafanaOperator, provider }))
