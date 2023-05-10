@@ -21,6 +21,7 @@ const hccm = new k8s.helm.v3.Release("hccm", {
     namespace: 'kube-system',
     name: 'hccm',
     createNamespace: true,
+    atomic: true,
     repositoryOpts: {
         repo: "https://charts.hetzner.cloud",
     }

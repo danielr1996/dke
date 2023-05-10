@@ -36,6 +36,7 @@ const certmanager = new k8s.helm.v3.Release("certmanager", {
     namespace: 'cert-manager',
     name: 'cert-manager',
     createNamespace: true,
+    atomic: true,
     repositoryOpts: {
         repo: "https://charts.jetstack.io",
     },

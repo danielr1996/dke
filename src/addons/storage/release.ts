@@ -19,11 +19,12 @@ const secret = new k8s.core.v1.Secret('longhorn-backup-secret',{
     }
 },{provider})
 
-const longhorn = new k8s.helm.v3.Release("storage", {
+export const longhorn = new k8s.helm.v3.Release("storage", {
     chart: "longhorn",
     version: "1.4.0",
     namespace: storageNamespace.metadata.name,
     name: 'longhorn',
+    atomic: true,
     createNamespace: true,
     repositoryOpts: {
         repo: "https://charts.longhorn.io",
@@ -42,7 +43,7 @@ const longhorn = new k8s.helm.v3.Release("storage", {
                 "cert-manager.io/cluster-issuer": letsencryptprod.metadata.name,
                 "nginx.ingress.kubernetes.io/auth-type": "basic",
                 "nginx.ingress.kubernetes.io/auth-secret": basicAuthSecret.metadata.name,
-                "nginx.ingress.kubernetes.io/auth-realm": "'Authentication Required - foo'"
+                "nginx.ingress.kubernetes.io/auth-realm": "'Authentication Required'"
 
             }
         },

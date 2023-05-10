@@ -2,6 +2,7 @@ import * as pulumi from '@pulumi/pulumi'
 import * as k8s from '@pulumi/kubernetes'
 import * as keycloak from '@pulumi/keycloak'
 import {provider as k8sprovider} from './provider'
+import { longhorn } from './storage/release'
 
 const config = new pulumi.Config()
 const keycloakrelease = new k8s.helm.v3.Release("keycloak", {
@@ -33,11 +34,11 @@ const keycloakrelease = new k8s.helm.v3.Release("keycloak", {
             adminPassword: config.require('keycloak.password')
         }
     }
-},{provider: k8sprovider});
+},{dependsOn: longhorn,provider: k8sprovider});
 
 const provider = new keycloak.Provider('provider',{
     clientId: 'admin-cli',
-    url: 'https://sso.danielrichter.codes',
+    url: `https://${config.require('keycloak.host')}`,
     username: config.require('keycloak.user'),
     password: config.require('keycloak.password'),
     initialLogin: false,

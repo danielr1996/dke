@@ -1,6 +1,5 @@
 import * as pulumi from '@pulumi/pulumi'
 import * as k8s from '@pulumi/kubernetes'
-import * as keycloak from '@pulumi/keycloak'
 import { provider } from '../provider'
 
 const config = new pulumi.Config()
@@ -32,12 +31,14 @@ const grafana = new k8s.apiextensions.CustomResource('grafana', {
     kind: 'Grafana',
     metadata: {
         name: 'grafana',
+        // TODO: read namespace for other resources from release
         namespace: 'observability-system',
         labels: {
             dashboards: 'grafana'
         }
     },
     spec: {
+        // TODO: check which values must be set and which can be left default
         config: {
             log: {
                 mode: "console"
@@ -46,8 +47,8 @@ const grafana = new k8s.apiextensions.CustomResource('grafana', {
                 disable_login_form: "false"
             },
             security: {
-                admin_user: 'root',
-                admin_password: 'secret'
+                admin_user: config.require('grafana.user'),
+                admin_password: config.require('grafana.password')
             }
         },
         ingress: {
@@ -59,7 +60,7 @@ const grafana = new k8s.apiextensions.CustomResource('grafana', {
             spec: {
                 ingressClassName: 'default',
                 rules: [{
-                    host: 'grafana.danielrichter.codes',
+                    host: config.require('grafana.host'),
                     http: {
                         paths: [{
                             backend: {
@@ -76,8 +77,8 @@ const grafana = new k8s.apiextensions.CustomResource('grafana', {
                     }
                 }],
                 tls: [{
-                    hosts: ['grafana.danielrichter.codes'],
-                    secretName: 'grafana.danielrichter.codes'
+                    hosts: [config.require('grafana.host')],
+                    secretName: config.require('grafana.host')
                 }]
             }
         }
@@ -102,6 +103,7 @@ const grafanaDatasource = new k8s.apiextensions.CustomResource('grafana-datasour
             type: 'prometheus',
             access: 'proxy',
             basicAuth: false,
+            //TODO: generate name from helm release name
             url: 'http://kube-prometheus-prometheus:9090',
             isDefault: true,
             jsonData: {
