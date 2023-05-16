@@ -2,12 +2,12 @@ import * as k8s from '@pulumi/kubernetes'
 import {provider} from '../provider'
 import {nodes} from "../../hetzner"
 
-nodes.worker.map(({node,volume},i)=>{
+const patches = [...nodes.storage, ...nodes.worker].map(({node,volume},i)=>{
     new k8s.core.v1.NodePatch(`patchlabels-${i}`,{
         metadata: {
             name: node.name,
             labels: {
-                'node.longhorn.io/create-default-disk': 'config',
+                'node.longhorn.io/create-default-disk': volume ? 'config' : 'false',
             },
             annotations: volume ? {
                 'node.longhorn.io/default-disks-config': volume.id.apply(id=>JSON.stringify([{

@@ -21,7 +21,7 @@ const secret = new k8s.core.v1.Secret('longhorn-backup-secret',{
 
 export const longhorn = new k8s.helm.v3.Release("storage", {
     chart: "longhorn",
-    version: "1.4.0",
+    version: "1.4.2",
     namespace: storageNamespace.metadata.name,
     name: 'longhorn',
     atomic: true,

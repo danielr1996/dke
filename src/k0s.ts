@@ -11,7 +11,7 @@ const config = new pulumi.Config()
 export const cluster = new k0s.Cluster(`${project}-${stack}`,{
     metadata: {name: `${project}-${stack}`},
     spec: {
-        hosts: Object.entries({worker: nodes.worker, controller: nodes.controller}).flatMap(([role,servers])=>(servers).map((node)=>({role,...node}))).map(({role,node})=>({
+        hosts: Object.entries({worker: [...nodes.worker,...nodes.storage], controller: nodes.controller}).flatMap(([role,servers])=>(servers).map((node)=>({role,...node}))).map(({role,node})=>({
                 role,
                 installFlags: ['--enable-cloud-provider=true'],
                 ssh: {
@@ -27,4 +27,4 @@ export const cluster = new k0s.Cluster(`${project}-${stack}`,{
     }  
 })
 
-cluster.kubeconfig.apply(config=>fs.writeFileSync('kubeconfig',config))
+cluster.kubeconfig.apply(kubecfg=>fs.writeFileSync(`${config.require('k0s.kubeconfig')}/${project}-${stack}`,kubecfg))
